@@ -169,14 +169,6 @@ local barrel_boom = {
 }
 tnt.register_tnt(barrel_boom)
 
-minetest.register_craft({
-	output = "rangedweapons:barrel",
-	recipe = {
-		{"default:wood", "tnt:gunpowder", "default:wood"},
-		{"default:wood", "tnt:tnt", "default:wood"},
-	}
-})
-
 minetest.register_node("rangedweapons:barrel", {
 		description = "" ..core.colorize("#35cdff","Explosive barrel\n")..core.colorize("#FFFFFF", "It will explode if shot by gun"),
 	tiles = {
@@ -190,11 +182,8 @@ minetest.register_node("rangedweapons:barrel", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	groups = {choppy = 3, oddly_breakable_by_hand = 3},
-	on_timer = function(pos)
-		tnt.boom(pos, barrel_boom)
-	end,
 	on_blast = function(pos)
-		tnt.boom(pos, barrel_boom)
+		tnt.boom(pos, {radius = 3})
 	end,
 	sounds = default.node_sound_wood_defaults(),
 	node_box = {

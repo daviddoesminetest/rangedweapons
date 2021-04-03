@@ -1,197 +1,121 @@
 
 
-	local timer = 0
-minetest.register_globalstep(function(dtime, player)
-	timer = timer + dtime;
-	if timer >= 0.75 then
-	for _, player in pairs(minetest.get_connected_players()) do
-	if player:get_wielded_item():get_name() == "rangedweapons:deagle_rld" then
-		player:set_wielded_item("rangedweapons:deagle")
-				minetest.sound_play("", {player})
-	end
-		end
-			end
-				end)
 
-
-minetest.register_craftitem("rangedweapons:deagle_rld", {
+minetest.register_tool("rangedweapons:deagle_rld", {
 	stack_max= 1,
 	wield_scale = {x=1.25,y=1.25,z=1.5},
-	description = "***RELOADING DESERT EAGLE***",
+	description = "",
 	range = 0,
+	loaded_gun = "rangedweapons:deagle",
+	groups = {not_in_creative_inventory = 1},
+	inventory_image = "rangedweapons_deagle_rld.png",
+})
+minetest.register_tool("rangedweapons:deagle_r", {
+	stack_max= 1,
+	wield_scale = {x=1.25,y=1.25,z=1.5},
+	description = "",
+	range = 0,
+	rw_next_reload = "rangedweapons:deagle",
+	load_sound = "rangedweapons_handgun_mag_in",
 	groups = {not_in_creative_inventory = 1},
 	inventory_image = "rangedweapons_deagle_rld.png",
 })
 
-
 minetest.register_tool("rangedweapons:deagle", {
-		description = "" ..core.colorize("#35cdff","Desert Eagle\n")..core.colorize("#FFFFFF", "Ranged damage: 11-18\n") ..core.colorize("#FFFFFF", "Accuracy: 85%\n") ..core.colorize("#FFFFFF", "Mob knockback: 9\n")  ..core.colorize("#FFFFFF", "Critical chance: 29%\n") ..core.colorize("#FFFFFF", "Critical damage: 25-44\n") ..core.colorize("#FFFFFF", "Ammunition: .357 Magnum rounds\n") ..core.colorize("#FFFFFF", "Rate of fire: 0.75\n") ..core.colorize("#FFFFFF", "Gun type: Magnum\n") ..core.colorize("#FFFFFF", "Bullet velocity: 45"),
+		description = "" ..core.colorize("#35cdff","Desert Eagle\n")..core.colorize("#FFFFFF", "Ranged damage: 11\n") ..core.colorize("#FFFFFF", "Accuracy: 85%\n") ..core.colorize("#FFFFFF", "knockback: 6\n")  ..core.colorize("#FFFFFF", "Critical chance: 20%\n") ..core.colorize("#FFFFFF", "Critical efficiency: 3x\n")..core.colorize("#FFFFFF", "Reload delay: 0.6\n")..core.colorize("#FFFFFF", "Clip size: 9/8/7\n")  ..core.colorize("#FFFFFF", "Ammunition: .357 Magnum rounds/.44 magnum rounds/.50AE catridges\n") ..core.colorize("#FFFFFF", "Rate of fire: 0.7\n") ..core.colorize("#FFFFFF", "Gun type: Magnum\n") ..core.colorize("#FFFFFF", "Block penetration: 5%\n")
+..core.colorize("#FFFFFF", "penetration: 15%\n")..core.colorize("#FFFFFF", "Bullet velocity: 50"),
 	wield_scale = {x=1.25,y=1.25,z=1.5},
 	range = 0,
 	inventory_image = "rangedweapons_deagle.png",
+RW_gun_capabilities = {
+		gun_damage = {fleshy=11,knockback=6},
+		gun_crit = 20,
+		gun_critEffc = 2.2,
+		suitable_ammo = {{"rangedweapons:357",9},{"rangedweapons:44",8},{"rangedweapons:50ae",7}},
+		gun_skill = {"revolver_skill",40},
+		gun_magazine = "rangedweapons:handgun_mag_white",
+		gun_icon = "rangedweapons_deagle_icon.png",
+		gun_unloaded = "rangedweapons:deagle_r",
+		gun_cooling = "rangedweapons:deagle_rld",
+		gun_velocity = 50,
+		gun_accuracy = 85,
+		gun_cooldown = 0.7,
+		gun_reload = 0.6/1,
+		gun_projectiles = 1,
+		has_shell = 1,
+		gun_durability = 900,
+		gun_smokeSize = 7,
+		gun_mob_penetration = 15,
+		gun_node_penetration = 5,
+		gun_unload_sound = "rangedweapons_handgun_mag_out",
+		gun_sound = "rangedweapons_deagle",
+	},
+	on_secondary_use = function(itemstack, user, pointed_thing)
+rangedweapons_reload_gun(itemstack, user)
+return itemstack
+end,
 	on_use = function(itemstack, user, pointed_thing)
-		timer = 0
-		local inv = user:get_inventory()
-		if not inv:contains_item("main", "rangedweapons:357 1") then
-			minetest.sound_play("rangedweapons_empty", {object=user})
-			return itemstack
-		end
-		if not minetest.setting_getbool("creative_mode") then
-			inv:remove_item("main", "rangedweapons:357")
-		end
-		local pos = user:getpos()
-		local dir = user:get_look_dir()
-		local yaw = user:get_look_yaw()
-		if pos and dir and yaw then
-			pos.y = pos.y + 1.6
-			local obj = minetest.add_entity(pos, "rangedweapons:deagleshot")
-			if obj then
-				minetest.sound_play("rangedweapons_deagle", {object=obj})
-				obj:setvelocity({x=dir.x * 45, y=dir.y * 45, z=dir.z * 45})
-				obj:setacceleration({x=dir.x * math.random(-1.5,1.5), y=math.random(-1.5,1.5), z=dir.z * math.random(-1.5,1.5)})
-				obj:setyaw(yaw + math.pi)
-			pos.y = pos.y + 0
-			local obj = minetest.add_entity(pos, "rangedweapons:empty_shell")
-				minetest.sound_play("", {object=obj})
-				obj:setvelocity({x=dir.x * -10, y=dir.y * -10, z=dir.z * -10})
-				obj:setacceleration({x=dir.x * -5, y= -10, z=dir.z * -5})
-				obj:setyaw(yaw + math.pi)
-	minetest.add_particle({
-		pos = pos,
-		velocity = {x=dir.x * 3, y=dir.y * 3, z=dir.z * 3} ,
-          	acceleration = {x=dir.x * -4, y=2, z=dir.z * -4},
-		expirationtime = 1.0,
-		size = 8,
-		collisiondetection = false,
-		vertical = false,
-		texture = "tnt_smoke.png",
-		glow = 5,
-	})
-				local ent = obj:get_luaentity()
-				if ent then
-					ent.player = ent.player or user
-			itemstack = "rangedweapons:deagle_rld"
-				end
-			end
-		end
-		return itemstack
+rangedweapons_shoot_gun(itemstack, user)
+return itemstack
 	end,
 })
-minetest.register_craft({
-	output = 'rangedweapons:deagle',
-	recipe = {
-		{'rangedweapons:gunsteel_ingot', 'rangedweapons:gunsteel_ingot', 'rangedweapons:gunsteel_ingot'},
-		{'rangedweapons:gunsteel_ingot', 'default:diamond', 'rangedweapons:plastic_sheet'},
-		{'', '', 'rangedweapons:plastic_sheet'},
-	}
+
+minetest.register_tool("rangedweapons:golden_deagle_rld", {
+	stack_max= 1,
+	wield_scale = {x=1.25,y=1.25,z=1.5},
+	description = "",
+	range = 0,
+	loaded_gun = "rangedweapons:golden_deagle",
+	groups = {not_in_creative_inventory = 1},
+	inventory_image = "rangedweapons_golden_deagle_rld.png",
 })
-minetest.register_craft({
-	output = 'rangedweapons:deagle',
-	recipe = {
-		{'moreores:silver_ingot', 'moreores:silver_ingot', 'moreores:silver_ingot'},
-		{'moreores:silver_ingot', 'default:diamond', 'rangedweapons:plastic_sheet'},
-		{'', '', 'rangedweapons:plastic_sheet'},
-	}
+minetest.register_tool("rangedweapons:golden_deagle_r", {
+	stack_max= 1,
+	wield_scale = {x=1.25,y=1.25,z=1.5},
+	description = "",
+	range = 0,
+	rw_next_reload = "rangedweapons:golden_deagle",
+	load_sound = "rangedweapons_handgun_mag_in",
+	groups = {not_in_creative_inventory = 1},
+	inventory_image = "rangedweapons_golden_deagle_rld.png",
 })
 
-local rangedweapons_deagleshot = {
-	physical = false,
-	timer = 0,
-	visual = "sprite",
-	visual_size = {x=0.3, y=0.3},
-	textures = {"rangedweapons_invisible.png"},
-	lastpos= {},
-	collisionbox = {0, 0, 0, 0, 0, 0},
-}
-rangedweapons_deagleshot.on_step = function(self, dtime, node, pos)
-	self.timer = self.timer + dtime
-	local tiem = 0.002
-	local pos = self.object:getpos()
-	local node = minetest.get_node(pos)
-
-	if self.timer > 0.065 then
-		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 1.25)
-		for k, obj in pairs(objs) do
-			if obj:get_luaentity() ~= nil then
-				if obj:get_luaentity().name ~= "rangedweapons:deagleshot" and obj:get_luaentity().name ~= "__builtin:item" then
-					if math.random(1, 100) <= 29 then
-					local damage = math.random(25,44)
-					obj:punch(self.object, 1.0, {
-						full_punch_interval = 1.0,
-						damage_groups= {fleshy = damage, knockback=18},
-					}, nil)
-					minetest.sound_play("crit", {pos = self.lastpos, gain = 0.8})
-					self.object:remove()
-					else
-					local damage = math.random(11,18)
-					obj:punch(self.object, 1.0, {
-						full_punch_interval = 1.0,
-						damage_groups= {fleshy = damage, knockback=9},
-					}, nil)
-					minetest.sound_play("default_dig_cracky", {pos = self.lastpos, gain = 0.8})
-					self.object:remove()
-				end
-			end
-			else
-				if math.random(1, 100) <= 29 then
-				local damage = math.random(25,44)
-					obj:punch(self.object, 1.0, {
-						full_punch_interval = 1.0,
-						damage_groups= {fleshy = damage},
-					}, nil)
-					minetest.sound_play("crit", {pos = self.lastpos, gain = 0.8})
-					self.object:remove()
-				else
-				local damage = math.random(11,18)
-				obj:punch(self.object, 1.0, {
-					full_punch_interval = 1.0,
-					damage_groups= {fleshy = damage},
-				}, nil)
-				minetest.sound_play("default_dig_cracky", {pos = self.lastpos, gain = 0.8})
-				self.object:remove()
-		end
-	end
-		if timer >= 0.002 + tiem then
-	minetest.add_particle({
-		pos = pos,
-		velocity = 0,
-          acceleration = {x=0, y=0, z=0},
-		expirationtime = 0.06,
-		size = 3,
-		collisiondetection = false,
-		vertical = false,
-		texture = "rangedweapons_bullet_fly.png",
-		glow = 15,
-	})
-		tiem = tiem + 0.002 
-			end
-		if self.timer >= 4.0 then
-		self.object:remove()
-			end
-	if self.lastpos.x ~= nil then
-		if minetest.registered_nodes[node.name].walkable then
-			if not minetest.setting_getbool("creative_mode") then
-			end
-			minetest.sound_play("default_dig_cracky", {pos = self.lastpos, gain = 0.8})
-		if node.name == "rangedweapons:barrel" or
-		node.name == "doors:door_glass_a" or
-		node.name == "doors:door_glass_b" or
-		node.name == "xpanes:pane" or
-		node.name == "xpanes:pane_flat" or
-		node.name == "vessels:drinking_glass" or
-		node.name == "vessels:glass_bottle" or
-		   node.name == "default:glass" then
-		minetest.get_node_timer(pos):start(0)
-		end
-		self.object:remove()
-	end
-	end
-	self.lastpos= {x = pos.x, y = pos.y, z = pos.z}
-	end
-	end
-	end
-
-
-minetest.register_entity("rangedweapons:deagleshot", rangedweapons_deagleshot )
-
+minetest.register_tool("rangedweapons:golden_deagle", {
+		description = "" ..core.colorize("#35cdff","Golden Desert Eagle\n")..core.colorize("#FFFFFF", "Ranged damage: 14\n") ..core.colorize("#FFFFFF", "Accuracy: 90%\n") ..core.colorize("#FFFFFF", "knockback: 6\n")  ..core.colorize("#FFFFFF", "Critical chance: 23%\n") ..core.colorize("#FFFFFF", "Critical efficiency: 3x\n")..core.colorize("#FFFFFF", "Reload delay: 0.6\n")..core.colorize("#FFFFFF", "Clip size: 9/8/7\n")  ..core.colorize("#FFFFFF", "Ammunition: .357 Magnum rounds/.44 magnum rounds/.50AE catridges\n") ..core.colorize("#FFFFFF", "Rate of fire: 0.75\n") ..core.colorize("#FFFFFF", "Gun type: Magnum\n") ..core.colorize("#FFFFFF", "Block penetration: 5%\n")
+..core.colorize("#FFFFFF", "penetration: 15%\n")..core.colorize("#FFFFFF", "Bullet velocity: 50"),
+	wield_scale = {x=1.25,y=1.25,z=1.5},
+	range = 0,
+	inventory_image = "rangedweapons_golden_deagle.png",
+RW_gun_capabilities = {
+		gun_damage = {fleshy=14,knockback=6},
+		gun_crit = 23,
+		gun_critEffc = 2.2,
+		suitable_ammo = {{"rangedweapons:357",9},{"rangedweapons:44",8},{"rangedweapons:50ae",7}},
+		gun_skill = {"revolver_skill",38},
+		gun_magazine = "rangedweapons:handgun_mag_white",
+		gun_icon = "rangedweapons_golden_deagle_icon.png",
+		gun_unloaded = "rangedweapons:golden_deagle_r",
+		gun_cooling = "rangedweapons:golden_deagle_rld",
+		gun_velocity = 50,
+		gun_accuracy = 90,
+		gun_cooldown = 0.75,
+		gun_reload = 0.6/1,
+		gun_projectiles = 1,
+		has_shell = 1,
+		gun_durability = 1000,
+		gun_smokeSize = 7,
+		gun_mob_penetration = 15,
+		gun_node_penetration = 5,
+		gun_unload_sound = "rangedweapons_handgun_mag_out",
+		gun_sound = "rangedweapons_deagle",
+	},
+	on_secondary_use = function(itemstack, user, pointed_thing)
+rangedweapons_reload_gun(itemstack, user)
+return itemstack
+end,
+	on_use = function(itemstack, user, pointed_thing)
+rangedweapons_shoot_gun(itemstack, user)
+return itemstack
+	end,
+})
 

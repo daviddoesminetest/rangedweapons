@@ -9,14 +9,6 @@ minetest.register_craft({
 	}
 })
 
-minetest.override_item("default:glass", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "rangedweapons:broken_glass"})
-		minetest.sound_play("glass_break",{pos})
-	end,
-})
-
-
 minetest.register_node("rangedweapons:broken_glass", {
 	description = "Broken glass",
 	drawtype = "glasslike",
@@ -37,76 +29,3 @@ minetest.register_node("rangedweapons:broken_glass", {
 	groups = {oddly_breakable_by_hand = 3},
 })
 
-if minetest.get_modpath("doors") then
-
-minetest.override_item("doors:door_glass_a", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "air"})
-		minetest.add_item(pos, "vessels:glass_fragments 5")
-		minetest.sound_play("glass_break",{pos})
-	end,
-})
-
-minetest.override_item("doors:door_glass_b", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "air"})
-		minetest.add_item(pos, "vessels:glass_fragments 5")
-		minetest.sound_play("glass_break",{pos})
-	end,
-})
-
-end
-
-if minetest.get_modpath("xpanes") then
-
-minetest.override_item("xpanes:pane", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "air"})
-		minetest.add_item(pos, "rangedweapons:glass_shards")
-		minetest.sound_play("glass_break",{pos})
-	end,
-})
-
-minetest.override_item("xpanes:pane_flat", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "air"})
-		minetest.add_item(pos, "rangedweapons:glass_shards")
-		minetest.sound_play("glass_break",{pos})
-	end,
-})
-
-end
-
-if minetest.get_modpath("vessels") then
-
-minetest.override_item("vessels:glass_bottle", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "air"})
-		minetest.add_item(pos, "rangedweapons:glass_shards")
-		minetest.sound_play("glass_break",{pos})
-	end,
-	walkable = true,
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.2, -0.5, -0.2, 0.2, -0.1, 0.2},
-		},
-	},
-})
-
-minetest.override_item("vessels:drinking_glass", {
-	on_timer = function(pos)
-		minetest.swap_node(pos, {name = "air"})
-		minetest.add_item(pos, "rangedweapons:glass_shards")
-		minetest.sound_play("glass_break",{pos})
-	end,
-	walkable = true,
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.2, -0.5, -0.2, 0.2, -0.1, 0.2},
-		},
-	},
-})
-
-end
