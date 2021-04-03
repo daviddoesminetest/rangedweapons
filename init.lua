@@ -6,7 +6,7 @@ minetest.register_craftitem("rangedweapons:javelint", {
 minetest.register_craftitem("rangedweapons:javelin", {
 	description = "javelin(ranged dammage 6|survives block hit|velocity 30|penetrates targets)",
 	wield_scale = {x=2,y=2,z=1.0},
-	range = 0,
+	range = 5,
 	inventory_image = "ranged_javelin_inv.png",
 	stack_max= 10,
 	on_use = function(itemstack, user, pointed_thing)
@@ -884,13 +884,13 @@ minetest.register_craft({
 })
 
 minetest.register_tool("rangedweapons:jackhammer", {
-	description = "jackhammer(ranged damage 10|spread 4|uses shotgun shells to shoot|velocity 45)",
+	description = "jackhammer(ranged damage 10|pellets 9|uses shotgun shells to shoot|velocity 45)",
 	wield_scale = {x=3.0,y=3.0,z=2.5},
 	inventory_image = "rangedweapons_jackhammer.png",
 	on_use = function(itemstack, user, pointed_thing)
 		local inv = user:get_inventory()
 		if not inv:contains_item("main", "rangedweapons:shell 1") then
-			minetest.sound_play("rangedweapons_empty", {object=user})
+			minetest.sound_play("empty", {object=user})
 			return itemstack
 		end
 		if not minetest.setting_getbool("creative_mode") then
@@ -904,10 +904,54 @@ minetest.register_tool("rangedweapons:jackhammer", {
 			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
 			if obj then
 				minetest.sound_play("shotgun_shoot", {object=obj})
-				obj:setvelocity({x=dir.x * 45, y=dir.y * 45, z=dir.z * 45})
-				obj:setacceleration({x=dir.x * 0, y=0, z=dir.z * 0})
-				obj:setyaw(yaw + math.pi)
-				local ent = obj:get_luaentity()
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 30})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 33})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 36})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 39})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 42})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 27})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 24})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 21})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:jackhammershot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 18})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
 				if ent then
 					ent.player = ent.player or user
 				end
@@ -929,8 +973,8 @@ local rangedweapons_jackhammershot = {
 	physical = false,
 	timer = 0,
 	visual = "sprite",
-	visual_size = {x=8.0, y=4.0,},
-	textures = {'shotshot.png'},
+	visual_size = {x=0.25, y=0.25,},
+	textures = {'shot.png'},
 	lastpos= {},
 	collisionbox = {0, 0, 0, 0, 0, 0},
 }
@@ -939,8 +983,8 @@ rangedweapons_jackhammershot.on_step = function(self, dtime)
 	local pos = self.object:getpos()
 	local node = minetest.get_node(pos)
 
-	if self.timer > 0.13 then
-		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 4)
+	if self.timer > 0.11 then
+		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 1)
 		for k, obj in pairs(objs) do
 			if obj:get_luaentity() ~= nil then
 				if obj:get_luaentity().name ~= "rangedweapons:jackhammershot" and obj:get_luaentity().name ~= "__builtin:item" then
@@ -979,13 +1023,13 @@ end
 minetest.register_entity("rangedweapons:jackhammershot", rangedweapons_jackhammershot )
 
 minetest.register_tool("rangedweapons:boomstick", {
-	description = "boomstick(ranged damage 4|spread 5|uses shotgun shells to shoot|velocity 40)",
+	description = "boomstick(ranged damage 4|pellets 11|uses shotgun shells to shoot|velocity 40)",
 	wield_scale = {x=1.0,y=1.0,z=2.0},
 	inventory_image = "rangedweapons_boomstick.png",
 	on_use = function(itemstack, user, pointed_thing)
 		local inv = user:get_inventory()
 		if not inv:contains_item("main", "rangedweapons:shell 1") then
-			minetest.sound_play("rangedweapons_empty", {object=user})
+			minetest.sound_play("empty", {object=user})
 			return itemstack
 		end
 		if not minetest.setting_getbool("creative_mode") then
@@ -999,10 +1043,63 @@ minetest.register_tool("rangedweapons:boomstick", {
 			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
 			if obj then
 				minetest.sound_play("shotgun_shoot", {object=obj})
-				obj:setvelocity({x=dir.x * 40, y=dir.y * 40, z=dir.z * 40})
-				obj:setacceleration({x=dir.x * 0, y=0, z=dir.z * 0})
-				obj:setyaw(yaw + math.pi)
-				local ent = obj:get_luaentity()
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 30})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 33})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 36})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 39})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 42})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 45})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 27})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 24})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 21})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 18})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:boomstickshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 15})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
 				if ent then
 					ent.player = ent.player or user
 				end
@@ -1023,8 +1120,8 @@ local rangedweapons_boomstickshot = {
 	physical = false,
 	timer = 0,
 	visual = "sprite",
-	visual_size = {x=10.0, y=5.0,},
-	textures = {'shotshot.png'},
+	visual_size = {x=0.25, y=0.25,},
+	textures = {'shot.png'},
 	lastpos= {},
 	collisionbox = {0, 0, 0, 0, 0, 0},
 }
@@ -1033,8 +1130,8 @@ rangedweapons_boomstickshot.on_step = function(self, dtime)
 	local pos = self.object:getpos()
 	local node = minetest.get_node(pos)
 
-	if self.timer > 0.145 then
-		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 5)
+	if self.timer > 0.11 then
+		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 1)
 		for k, obj in pairs(objs) do
 			if obj:get_luaentity() ~= nil then
 				if obj:get_luaentity().name ~= "rangedweapons:boomstickshot" and obj:get_luaentity().name ~= "__builtin:item" then
@@ -1074,13 +1171,13 @@ minetest.register_entity("rangedweapons:boomstickshot", rangedweapons_boomsticks
 
 
 minetest.register_tool("rangedweapons:sawedoff", {
-	description = "sawedoff shotgun(ranged damage 5|spread 4|uses shotgun shells to shoot|velocity 40)",
+	description = "sawedoff shotgun(ranged damage 5|pellets 7|uses shotgun shells to shoots)",
 	wield_scale = {x=1.5,y=1.5,z=2.0},
 	inventory_image = "rangedweapons_sawedoff.png",
 	on_use = function(itemstack, user, pointed_thing)
 		local inv = user:get_inventory()
 		if not inv:contains_item("main", "rangedweapons:shell 1") then
-			minetest.sound_play("rangedweapons_empty", {object=user})
+			minetest.sound_play("empty", {object=user})
 			return itemstack
 		end
 		if not minetest.setting_getbool("creative_mode") then
@@ -1094,10 +1191,43 @@ minetest.register_tool("rangedweapons:sawedoff", {
 			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
 			if obj then
 				minetest.sound_play("shotgun_shoot", {object=obj})
-				obj:setvelocity({x=dir.x * 40, y=dir.y * 40, z=dir.z * 40})
-				obj:setacceleration({x=dir.x * 0, y=0, z=dir.z * 0})
-				obj:setyaw(yaw + math.pi)
-				local ent = obj:get_luaentity()
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 30})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 33})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 36})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 39})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 27})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 24})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:sawedoffshot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 21})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
 				if ent then
 					ent.player = ent.player or user
 				end
@@ -1118,8 +1248,8 @@ local rangedweapons_sawedoffshot = {
 	physical = false,
 	timer = 0,
 	visual = "sprite",
-	visual_size = {x=8.0, y=4.0,},
-	textures = {'shotshot.png'},
+	visual_size = {x=0.25, y=0.25,},
+	textures = {'shot.png'},
 	lastpos= {},
 	collisionbox = {0, 0, 0, 0, 0, 0},
 }
@@ -1128,8 +1258,8 @@ rangedweapons_sawedoffshot.on_step = function(self, dtime)
 	local pos = self.object:getpos()
 	local node = minetest.get_node(pos)
 
-	if self.timer > 0.135 then
-		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 5)
+	if self.timer > 0.10 then
+		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 1)
 		for k, obj in pairs(objs) do
 			if obj:get_luaentity() ~= nil then
 				if obj:get_luaentity().name ~= "rangedweapons:sawedoffshot" and obj:get_luaentity().name ~= "__builtin:item" then
@@ -1169,13 +1299,13 @@ minetest.register_entity("rangedweapons:sawedoffshot", rangedweapons_sawedoffsho
 
 
 minetest.register_tool("rangedweapons:spas12", {
-	description = "spas-12(ranged damage 8|spread 3|uses shotgun shells to shoot|velocity 50)",
+	description = "spas-12(ranged damage 8|pellets 5|uses shotgun shells to shoot)",
 	wield_scale = {x=1.5,y=1.5,z=1.5},
 	inventory_image = "rangedweapons_spas12.png",
 	on_use = function(itemstack, user, pointed_thing)
 		local inv = user:get_inventory()
 		if not inv:contains_item("main", "rangedweapons:shell 1") then
-			minetest.sound_play("rangedweapons_empty", {object=user})
+			minetest.sound_play("empty", {object=user})
 			return itemstack
 		end
 		if not minetest.setting_getbool("creative_mode") then
@@ -1189,10 +1319,33 @@ minetest.register_tool("rangedweapons:spas12", {
 			local obj = minetest.add_entity(pos, "rangedweapons:spas12shot")
 			if obj then
 				minetest.sound_play("shotgun_shoot", {object=obj})
-				obj:setvelocity({x=dir.x * 50, y=dir.y * 50, z=dir.z * 50})
-				obj:setacceleration({x=dir.x * 0, y=0, z=dir.z * 0})
-				obj:setyaw(yaw + math.pi)
-				local ent = obj:get_luaentity()
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 30})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:spas12shot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 35})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:spas12shot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 40})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:spas12shot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 25})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
+			pos.y = pos.y + 0
+			local obj = minetest.add_entity(pos, "rangedweapons:spas12shot")
+				minetest.sound_play("", {object=obj})
+				obj:setvelocity({x=dir.x * 30, y=dir.y * 30, z=dir.z * 20})
+				obj:setacceleration({x=dir.x * 0, y= 0, z=dir.z * 0})
+
 				if ent then
 					ent.player = ent.player or user
 				end
@@ -1208,13 +1361,12 @@ minetest.register_craft({
 		{'dye:black', 'default:diamond', 'default:steel_ingot'},
 	}
 })
-
 local rangedweapons_spas12shot = {
 	physical = false,
 	timer = 0,
 	visual = "sprite",
-	visual_size = {x=6.0, y=3.0,},
-	textures = {'shotshot.png'},
+	visual_size = {x=0.25, y=0.25,},
+	textures = {'shot.png'},
 	lastpos= {},
 	collisionbox = {0, 0, 0, 0, 0, 0},
 }
@@ -1223,8 +1375,8 @@ rangedweapons_spas12shot.on_step = function(self, dtime)
 	local pos = self.object:getpos()
 	local node = minetest.get_node(pos)
 
-	if self.timer > 0.115 then
-		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 3)
+	if self.timer > 0.1 then
+		local objs = minetest.get_objects_inside_radius({x = pos.x, y = pos.y, z = pos.z}, 1)
 		for k, obj in pairs(objs) do
 			if obj:get_luaentity() ~= nil then
 				if obj:get_luaentity().name ~= "rangedweapons:spas12shot" and obj:get_luaentity().name ~= "__builtin:item" then
