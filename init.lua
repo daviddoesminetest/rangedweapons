@@ -26,7 +26,7 @@ make_sparks = function(pos)
 minetest.sound_play("rengedweapons_ricochet", {pos, gain = 0.75})
 	for i=1,9 do
 	minetest.add_particle({
-		pos = pos, 
+		pos = pos,
 		velocity = {x=math.random(-6.0,6.0),  y=math.random(-10.0,15.0),  z=math.random(-6.0,6.0)},
           	acceleration = {x=math.random(-9.0,9.0), y=math.random(-15.0,-3.0), z=math.random(-9.0,9.0)},
 		expirationtime = 1.0,
@@ -140,7 +140,7 @@ player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
 if GunCaps.gun_magazine ~= nil then
 		local pos = player:get_pos()
 		local dir = player:get_look_dir()
-		local yaw = player:get_look_yaw()
+		local yaw = player:get_look_horizontal()
 		if pos and dir and yaw then
 			pos.y = pos.y + 1.4
 local obj = minetest.add_entity(pos,"rangedweapons:mag")
@@ -233,7 +233,7 @@ inv:add_item("main",ammoName.." "..ammoCount)
 gunMeta:set_int("RW_bullets",0)
 end
 
-if inv:contains_item("main",reload_ammo:get_name()) and 
+if inv:contains_item("main",reload_ammo:get_name()) and
 gunMeta:get_int("RW_bullets") < clipSize then
 inv:remove_item("main",reload_ammo:get_name())
 gunMeta:set_int("RW_bullets",gunMeta:get_int("RW_bullets")+1)
@@ -368,7 +368,7 @@ end
 local gunMeta = itemstack:get_meta()
 local playerMeta = player:get_meta()
 
-if gunMeta:get_int("RW_bullets") > 0 and 
+if gunMeta:get_int("RW_bullets") > 0 and
 playerMeta:get_float("rw_cooldown") <= 0 then
 
 playerMeta:set_float("rw_cooldown", gun_cooldown)
@@ -561,7 +561,7 @@ end
 local inv = player:get_inventory()
 local playerMeta = player:get_meta()
 
-if inv:contains_item("main", "rangedweapons:power_particle "..PowerCaps.power_consumption) and 
+if inv:contains_item("main", "rangedweapons:power_particle "..PowerCaps.power_consumption) and
 playerMeta:get_float("rw_cooldown") <= 0 then
 playerMeta:set_float("rw_cooldown", power_cooldown)
 
@@ -657,7 +657,7 @@ rangedweapons_launch_projectile = function(player,projNum,projDmg,projEnt,visual
 ----------------------------------
 		local pos = player:get_pos()
 		local dir = player:get_look_dir()
-		local yaw = player:get_look_yaw()
+		local yaw = player:get_look_horizontal()
 		local svertical = player:get_look_vertical()
 
 		if pos and dir and yaw then
@@ -666,13 +666,13 @@ rangedweapons_launch_projectile = function(player,projNum,projDmg,projEnt,visual
 
 	if has_shell > 0 then
 	local shl = minetest.add_entity(pos, shellEnt)
-shl:setvelocity({x=dir.x * -10, y=dir.y * -10, z=dir.z * -10})
-shl:setacceleration({x=dir.x * -5, y= -10, z=dir.z * -5})
+shl:set_velocity({x=dir.x * -10, y=dir.y * -10, z=dir.z * -10})
+shl:set_acceleration({x=dir.x * -5, y= -10, z=dir.z * -5})
 shl:set_rotation({x=0,y=yaw + math.pi,z=-svertical})
 shl:set_properties({
 textures = {shellTexture},
 visual = shellVisual,})
-	end	
+	end
 if smokeSize > 0 then
 	minetest.add_particle({
 		pos = pos,
@@ -742,7 +742,7 @@ local bulletStack = ItemStack({name = gunMeta:get_string("RW_ammo_name")})
 minetest.sound_play(rldsound, {player})
 		local pos = player:get_pos()
 		local dir = player:get_look_dir()
-		local yaw = player:get_look_yaw()
+		local yaw = player:get_look_horizontal()
 		if pos and dir and yaw then
 			pos.y = pos.y + 1.6
 			local obj = minetest.add_entity(pos, "rangedweapons:empty_shell")
@@ -766,7 +766,34 @@ obj:set_acceleration({x=dir.x*-5, y=-10, z=dir.z*-5})
 	obj:set_yaw(yaw + math.pi)
 	end end end
 ---------------------------------------------------
+--
 
+function get_weapon_path(modpath, weapons_directory, weapon_type, weapon_name)
+    return modpath .. "/" .. weapons_directory .. "/" .. weapon_type .. "/" .. weapon_name .. ".lua"
+end
+
+
+local weapons = {
+    handgun = {'glock17', 'luger', 'makarov', 'python', 'deagle', 'taurus', 'beretta', 'm1991'},
+    rifle = {'ak47', 'g36', 'm16', 'scar', 'awp', 'm200'},
+    shotgun = {'aa12', 'remington', 'spas12', 'benelli', 'jackhammer'},
+    machine_gun = {'rpk', 'm60', 'minigun'},
+    sub_machine_gun = {'mp40', 'mp5', 'uzi', 'kriss_sv', 'ump', 'tec9', 'thompson', 'tmp'},
+    force_weapon = {'forcegun'},
+    power_weapon = {'laser_blaster', 'laser_rifle', 'laser_shotgun'},
+    throwable = {'shuriken', 'javelin'},
+    explosive = {'m79', 'milkor', 'rpg', 'hand_grenade'}
+}
+
+local weapons_directory = "weapons"
+
+for k, v in pairs(weapons) do
+    weapon_type = k
+
+    for i, weapon in ipairs(v) do
+        dofile(get_weapon_path(modpath, weapons_directory, weapon_type, weapon))
+    end
+end
 
 
 dofile(modpath.."/settings.lua")
@@ -777,84 +804,9 @@ dofile(modpath.."/bullet_knockback.lua")
 dofile(modpath.."/ammo.lua")
 dofile(modpath.."/crafting.lua")
 
-if rweapons_shurikens == "true" then
-	dofile(modpath.."/shurikens.lua")
-end
-
-if rweapons_handguns == "true" then
-	dofile(modpath.."/makarov.lua")
-	dofile(modpath.."/luger.lua")
-	dofile(modpath.."/beretta.lua")
-	dofile(modpath.."/m1991.lua")
-	dofile(modpath.."/glock17.lua")
-	dofile(modpath.."/deagle.lua")
-end
-
-if rweapons_forceguns == "true" then
-	dofile(modpath.."/forcegun.lua")
-end
-
-if rweapons_javelins == "true" then
-	dofile(modpath.."/javelin.lua")
-end
-
-if rweapons_power_weapons == "true" then
-	dofile(modpath.."/generator.lua")
-	dofile(modpath.."/laser_blaster.lua")
-	dofile(modpath.."/laser_rifle.lua")
-	dofile(modpath.."/laser_shotgun.lua")
-end
-
-if rweapons_machine_pistols == "true" then
-	dofile(modpath.."/tmp.lua")
-	dofile(modpath.."/tec9.lua")
-	dofile(modpath.."/uzi.lua")
-	dofile(modpath.."/kriss_sv.lua")
-end
-if rweapons_shotguns == "true" then
-	dofile(modpath.."/remington.lua")
-	dofile(modpath.."/spas12.lua")
-	dofile(modpath.."/benelli.lua")
-end
-if rweapons_auto_shotguns == "true" then
-	dofile(modpath.."/jackhammer.lua")
-	dofile(modpath.."/aa12.lua")
-end
-if rweapons_smgs == "true" then
-	dofile(modpath.."/mp5.lua")
-	dofile(modpath.."/ump.lua")
-	dofile(modpath.."/mp40.lua")
-	dofile(modpath.."/thompson.lua")
-end
-if rweapons_rifles == "true" then
-	dofile(modpath.."/awp.lua")
-	dofile(modpath.."/svd.lua")
-	dofile(modpath.."/m200.lua")
-end
-if rweapons_heavy_machineguns == "true" then
-	dofile(modpath.."/m60.lua")
-	dofile(modpath.."/rpk.lua")
-	dofile(modpath.."/minigun.lua")
-end
-if rweapons_revolvers == "true" then
-	dofile(modpath.."/python.lua")
-	dofile(modpath.."/taurus.lua")
-end
-if rweapons_assault_rifles == "true" then
-	dofile(modpath.."/m16.lua")
-	dofile(modpath.."/g36.lua")
-	dofile(modpath.."/ak47.lua")
-	dofile(modpath.."/scar.lua")
-end
-
 if rweapons_explosives == "true" then
 	dofile(modpath.."/explosives.lua")
-	dofile(modpath.."/m79.lua")
-	dofile(modpath.."/milkor.lua")
-	dofile(modpath.."/rpg.lua")
-	dofile(modpath.."/hand_grenade.lua")
 end
-
 
 if rweapons_glass_breaking == "true" then
 	dofile(modpath.."/glass_breaking.lua")
@@ -922,7 +874,7 @@ minetest.register_abm({
 })
 
 minetest.register_on_joinplayer(function(player)
- gunammo = 
+ gunammo =
 	player:hud_add({
 	hud_elem_type = "text",
 	name = "gunammo",
@@ -933,7 +885,7 @@ minetest.register_on_joinplayer(function(player)
 	offset = {x = 30, y = 100},
 	alignment = {x = 0, y = -1}
 	})
- gunimg = 
+ gunimg =
 	player:hud_add({
 	hud_elem_type = "image",
 	text = "rangedweapons_empty_icon.png",
@@ -942,7 +894,7 @@ minetest.register_on_joinplayer(function(player)
 	offset = {x = 30, y = 100},
 	alignment = {x = 0, y = -1}
 	})
- ammoimg = 
+ ammoimg =
 	player:hud_add({
 	hud_elem_type = "image",
 	text = "rangedweapons_empty_icon.png",
@@ -951,7 +903,7 @@ minetest.register_on_joinplayer(function(player)
 	offset = {x = 30, y = 100},
 	alignment = {x = 0, y = -1}
 	})
- hit = 
+ hit =
 	player:hud_add({
 	hud_elem_type = "image",
 	text = "rangedweapons_empty_icon.png",
@@ -960,7 +912,7 @@ minetest.register_on_joinplayer(function(player)
 	offset = {x = 0, y = 0},
 	alignment = {x = 0, y = 0}
 	})
-scope_hud = 
+scope_hud =
 	player:hud_add({
 	hud_elem_type = "image",
 	position = { x=0.5, y=0.5 },
