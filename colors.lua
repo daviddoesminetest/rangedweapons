@@ -1,6 +1,8 @@
-local color = {}
+local color = {
+    white = "#ffffff",
+    turquoise = "#35cdff"
+}
 
-color.white = "#FFFFFF"
-
+color.title_color = color["turquoise"]
 
 return color
