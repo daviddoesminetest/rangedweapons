@@ -5,7 +5,6 @@ local weapon_item_name = rangedweapons.mod_name .. ":" .. weapon_name
 
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
-local item = dofile(modpath.."/item.lua")
 local weapon = dofile(modpath.."/weapon.lua")
 local handgun = dofile(modpath.."/weapons".."/handgun".."/handgun.lua")
 

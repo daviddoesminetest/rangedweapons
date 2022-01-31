@@ -49,7 +49,7 @@ function weapon.generate_description(weapon_data)
 
     for i,v in ipairs(text) do
         if i == 0 then
-            color_text = core.colorize(item.title_color, v)
+            color_text = core.colorize(rangedweapons.colors.title_color, v)
         else
             color_text = core.colorize(rangedweapons.colors.white, v)
         end
