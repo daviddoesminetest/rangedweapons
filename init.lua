@@ -1,7 +1,11 @@
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
+ranged_weapons = {}
+ranged_weapons.mod_name = "rangedweapons"
+
 local weapon = dofile(modpath .. "/weapon.lua")
 
+dofile(modpath .. "/colors.lua")
 dofile(modpath .. "/settings.lua")
 dofile(modpath .. "/cooldown_stuff.lua")
 dofile(modpath .. "/skills.lua")
@@ -13,8 +17,6 @@ dofile(modpath .. "/armor.lua")
 
 dofile(modpath .. "/blocks/antigun_block.lua")
 
-rangedweapons = {}
-rangedweapons.mod_name = "rangedweapons"
 
 -- Load all weapons
 for k, v in pairs(weapon.weapons) do
@@ -61,46 +63,38 @@ end
 rangedweapons_reload_gun = function(itemstack, player)
     local gun_data = itemstack:get_definition().rw_gun_data
 
-    if gun_data ~= nil then
-        gun_unload_sound = gun_data.gun_unload_sound or ""
-    end
-
-    minetest.sound_play(gun_unload_sound, {player})
+    minetest.sound_play(gun_data.unload_sound, {player})
 
     local playerMeta = player:get_meta()
     local gunMeta = itemstack:get_meta()
 
-    gunMeta:set_float("RW_reload_delay", gun_data["reload_delay"])
+    gunMeta:set_float("rw_reload_delay", gun_data.reload_delay)
 
-    playerMeta:set_float("rw_cooldown", gun_data["reload_delay"])
+    playerMeta:set_float("rw_cooldown", gun_data.reload_delay)
 
     local player_has_ammo = 0
     local clipSize = 0
     local reload_ammo = ""
 
-    -- If we have the right type of ammo in our inventory?
-    if gun_data.suitable_ammo ~= nil then
-        -- Get the players inventory and iterate over it
-        local inv = player:get_inventory()
-        for i = 1, inv:get_size("main") do
-            -- For each type of suitable ammo in the inventory,
-            -- if the ammo is the kind we're looking for
-            for _, ammo in pairs(gun_data.suitable_ammo) do
-                if inv:get_stack("main", i):get_name() == ammo[1] then
-                    -- Then mark that stack of ammo as what we will use
-                    -- to reload
-                    reload_ammo = inv:get_stack("main", i)
-                    -- And set the clipsize??
-                    clipSize = ammo[2]
 
-                    player_has_ammo = 1
-                    break
-                end
-            end
+    local inv = player:get_inventory()
 
-            if player_has_ammo == 1 then
+    -- TODO: break out into separate function.
+    -- Iterate over player inventory searching for ammo, and mark it
+    -- for use during reload.
+    for i = 1, inv:get_size("main") do
+        for _, ammo in pairs(gun_data.suitable_ammo) do
+            if inv:get_stack("main", i):get_name() == ammo[1] then
+                reload_ammo = inv:get_stack("main", i)
+                clipSize = ammo[2]
+
+                player_has_ammo = 1
                 break
             end
+        end
+
+        if player_has_ammo == 1 then
+            break
         end
     end
 
@@ -111,43 +105,29 @@ rangedweapons_reload_gun = function(itemstack, player)
             ammo_icon = reload_ammo:get_definition().inventory_image
         end
 
-        player:hud_change(gunimg, "text", gun_data["texture"]["icon"])
+        player:hud_change(gunimg, "text", gun_data.texture.icon)
         player:hud_change(ammoimg, "text", ammo_icon)
 
         local gunMeta = itemstack:get_meta()
-        local ammoCount = gunMeta:get_int("RW_bullets")
-        local ammoName = gunMeta:get_string("RW_ammo_name")
+        local ammoCount = gunMeta:get_int("rw_bullets")
+        local ammoName = gunMeta:get_string("rw_ammo_name")
         local inv = player:get_inventory()
 
         inv:add_item("main", ammoName .. " " .. ammoCount)
 
         if inv:contains_item("main", reload_ammo:get_name() .. " " .. clipSize) then
             inv:remove_item("main", reload_ammo:get_name() .. " " .. clipSize)
-            gunMeta:set_int("RW_bullets", clipSize)
+            gunMeta:set_int("rw_bullets", clipSize)
         else
-            gunMeta:set_int("RW_bullets", reload_ammo:get_count())
+            gunMeta:set_int("rw_bullets", reload_ammo:get_count())
             inv:remove_item("main", reload_ammo:get_name() .. " " .. reload_ammo:get_count())
         end
 
-        gunMeta:set_string("RW_ammo_name", reload_ammo:get_name())
+        gunMeta:set_string("rw_ammo_name", reload_ammo:get_name())
 
-        player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
+        player:hud_change(gunammo, "text", gunMeta:get_int("rw_bullets"))
 
-        if gun_data.gun_magazine ~= nil then
-            local pos = player:get_pos()
-            local dir = player:get_look_dir()
-            local yaw = player:get_look_horizontal()
-            if pos and dir and yaw then
-                pos.y = pos.y + 1.4
-                local obj = minetest.add_entity(pos, "rangedweapons:mag")
-                if obj then
-                    obj:set_properties({textures = {gun_data.gun_magazine}})
-                    obj:set_velocity({x = dir.x * 2, y = dir.y * 2, z = dir.z * 2})
-                    obj:set_acceleration({x = 0, y = -5, z = 0})
-                    obj:set_rotation({x = 0, y = yaw + math.pi, z = 0})
-                end
-            end
-        end
+        weapon.drop_magazine(player, gun_data)
 
         if gun_data.gun_unloaded ~= nil then
             itemstack:set_name(gun_data.gun_unloaded)
@@ -157,13 +137,12 @@ end
 
 rangedweapons_single_load_gun = function(itemstack, player)
     local gun_data = itemstack:get_definition().rw_gun_data
-
-    local reload_delay = gun_data["reload_delay"]
+    local reload_delay = gun_data.reload_delay
 
     local playerMeta = player:get_meta()
     local gunMeta = itemstack:get_meta()
 
-    gunMeta:set_float("RW_reload_delay", reload_delay)
+    gunMeta:set_float("rw_reload_delay", reload_delay)
     playerMeta:set_float("rw_cooldown", reload_delay)
 
     local player_has_ammo = 0
@@ -190,39 +169,33 @@ rangedweapons_single_load_gun = function(itemstack, player)
     end
 
     if player_has_ammo == 1 then
-        local gun_icon = "rangedweapons_emergency_gun_icon.png"
-
-        if gun_data.gun_icon ~= nil then
-            gun_icon = gun_data.gun_icon
-        end
-
         local ammo_icon = "rangedweapons_emergency_ammo_icon.png"
 
         if reload_ammo:get_definition().inventory_image ~= nil then
             ammo_icon = reload_ammo:get_definition().inventory_image
         end
 
-        player:hud_change(gunimg, "text", gun_icon)
+        player:hud_change(gunimg, "text", gun_data.texture.icon)
         player:hud_change(ammoimg, "text", ammo_icon)
 
         local gunMeta = itemstack:get_meta()
-        local ammoCount = gunMeta:get_int("RW_bullets")
-        local ammoName = gunMeta:get_string("RW_ammo_name")
+        local ammoCount = gunMeta:get_int("rw_bullets")
+        local ammoName = gunMeta:get_string("rw_ammo_name")
         local inv = player:get_inventory()
 
         if ammoName ~= reload_ammo:get_name() then
             inv:add_item("main", ammoName .. " " .. ammoCount)
-            gunMeta:set_int("RW_bullets", 0)
+            gunMeta:set_int("rw_bullets", 0)
         end
 
-        if inv:contains_item("main", reload_ammo:get_name()) and gunMeta:get_int("RW_bullets") < clipSize then
+        if inv:contains_item("main", reload_ammo:get_name()) and gunMeta:get_int("rw_bullets") < clipSize then
             inv:remove_item("main", reload_ammo:get_name())
-            gunMeta:set_int("RW_bullets", gunMeta:get_int("RW_bullets") + 1)
+            gunMeta:set_int("rw_bullets", gunMeta:get_int("rw_bullets") + 1)
         end
 
-        gunMeta:set_string("RW_ammo_name", reload_ammo:get_name())
+        gunMeta:set_string("rw_ammo_name", reload_ammo:get_name())
 
-        player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
+        player:hud_change(gunammo, "text", gunMeta:get_int("rw_bullets"))
 
         if gun_data.gun_unloaded ~= nil then
             itemstack:set_name(gun_data.gun_unloaded)
@@ -371,21 +344,17 @@ rangedweapons_shoot_gun = function(itemstack, player)
         local gunMeta = itemstack:get_meta()
         local playerMeta = player:get_meta()
 
-        if gunMeta:get_int("RW_bullets") > 0 and playerMeta:get_float("rw_cooldown") <= 0 then
-            playerMeta:set_float("rw_cooldown", gun_data["gun_cooldown"])
+        if gunMeta:get_int("rw_bullets") > 0 and playerMeta:get_float("rw_cooldown") <= 0 then
+            playerMeta:set_float("rw_cooldown", gun_data.cooldown)
 
-            player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
+            player:hud_change(gunammo, "text", gunMeta:get_int("rw_bullets"))
 
-            local gun_icon = "rangedweapons_emergency_gun_icon.png"
-            if gun_data.gun_icon ~= nil then
-                gun_icon = gun_data.gun_icon
-            end
-            player:hud_change(gunimg, "text", gun_icon)
+            player:hud_change(gunimg, "text", gun_data.texture.icon)
 
             local OnCollision = function()
             end
 
-            local bulletStack = ItemStack({name = gunMeta:get_string("RW_ammo_name")})
+            local bulletStack = ItemStack({name = gunMeta:get_string("rw_ammo_name")})
             AmmoCaps = bulletStack:get_definition().RW_ammo_capabilities
 
             local gun_damage = {fleshy = 1}

@@ -1,6 +1,6 @@
-rangedweapons.colors = {
+ranged_weapons.colors = {
     white = "#ffffff",
     turquoise = "35cdff"
 }
 
-ranged_weapons.color.title_color = color.turquoise
+ranged_weapons.colors.title_color = ranged_weapons.colors.turquoise

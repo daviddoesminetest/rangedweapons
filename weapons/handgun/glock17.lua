@@ -1,12 +1,12 @@
+local modpath = minetest.get_modpath(minetest.get_current_modname())
+
 local weapon = dofile(modpath.."/weapon.lua")
 local handgun = dofile(modpath.."/weapons".."/handgun".."/handgun.lua")
-
-local modpath = minetest.get_modpath(minetest.get_current_modname())
 
 local weapon_type = "handgun"
 local weapon_name = "glock17"
 
-local weapon_item_name = rangedweapons.mod_name .. ":" .. weapon_name
+local weapon_item_name = ranged_weapons.mod_name .. ":" .. weapon_name
 
 -- Attributes for the weapon
 local glock_data = {
@@ -22,7 +22,7 @@ local glock_data = {
     wield_scale = {x = 1.2, y = 1.2, z =1.2}
 }
 
-glock_data.suitable_ammo = {{rangedweapons.mod_name .. ":" .. "9mm", glock_data.capacity}}
+glock_data.suitable_ammo = {{ranged_weapons.mod_name .. ":" .. "9mm", glock_data.capacity}}
 
 -- Populate any unset values with handgun defaults
 for k,v in pairs(handgun) do

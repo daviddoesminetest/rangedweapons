@@ -1,9 +1,9 @@
 local weapon_type = "handgun"
 local weapon_name = "beretta"
 
-local weapon_item_name = rangedweapons.mod_name .. ":" .. weapon_name
-
+local weapon_item_name = ranged_weapons.mod_name .. ":" .. weapon_name
 local modpath = minetest.get_modpath(minetest.get_current_modname())
+
 
 local weapon = dofile(modpath.."/weapon.lua")
 local handgun = dofile(modpath.."/weapons".."/handgun".."/handgun.lua")
@@ -17,9 +17,9 @@ local beretta_data = {
         default = weapon.get_texture_name(weapon_type, weapon_name, "texture.png"),
         reload = weapon.get_texture_name(weapon_type, weapon_name, "reload.png"),
     },
-    unloaded = rangedweapons.mod_name .. ":beretta_r",
-    cooling = rangedweapons.mod_name .. ":beretta_rld",
-    fire_sound = rangedweapons.mod_name .. "_beretta",
+    unloaded = ranged_weapons.mod_name .. ":beretta_r",
+    cooling = ranged_weapons.mod_name .. ":beretta_rld",
+    fire_sound = ranged_weapons.mod_name .. "_beretta",
 }
 
 beretta_data["suitable_ammo"] = {{"rangedweapons:9mm",beretta_data["capacity"]}}

@@ -1,6 +1,4 @@
 local modpath = minetest.get_modpath(minetest.get_current_modname())
-local constants = dofile(modpath.."/constants.lua")
-
 local weapon = {}
 
 weapon.weapons = {
@@ -28,30 +26,30 @@ end
 
 
 function weapon.get_texture_name(weapon_name, texture_name)
-    return constants.mod_name .. "_" .. weapon_name .. "_" .. texture_name
+    return ranged_weapons.mod_name .. "_" .. weapon_name .. "_" .. texture_name
 end
 
 function weapon.generate_description(weapon_data)
     local description = ""
     local text = {
-        string.format("%s", weapon_data["name"]),
-        string.format("Damage: %d", weapon_data["damage"]),
-        string.format("Accuracy: %d", weapon_data["accuracy"]).."%",
-        string.format("Velocity: %d", weapon_data["velocity"]),
-        string.format("Knockback: %d", weapon_data["knock_back"]),
-        string.format("Critical chance: %d", weapon_data["critical_chance"]).."%",
-        string.format("Critical efficiency: %d", weapon_data["critical_efficiency"]),
-        string.format("Reload delay: %.2f", weapon_data["reload_delay"]),
-        string.format("Capacity: %d", weapon_data["capacity"]),
-        string.format("Ammunition: %s", weapon_data["ammunition_string"]),
-        string.format("Rate of fire: %.2f", weapon_data["fire_rate"]),
+        string.format("%s", weapon_data.name),
+        string.format("Damage: %d", weapon_data.damage),
+        string.format("Accuracy: %d", weapon_data.accuracy).."%",
+        string.format("Velocity: %d", weapon_data.velocity),
+        string.format("Knockback: %d", weapon_data.knock_back),
+        string.format("Critical chance: %d", weapon_data.critical_chance).."%",
+        string.format("Critical efficiency: %d", weapon_data.critical_efficiency),
+        string.format("Reload delay: %.2f", weapon_data.reload_delay),
+        string.format("Capacity: %d", weapon_data.capacity),
+        string.format("Ammunition: %s", weapon_data.ammunition_string),
+        string.format("Rate of fire: %.2f", weapon_data.fire_rate),
     }
 
     for i,v in ipairs(text) do
         if i == 0 then
-            color_text = core.colorize(rangedweapons.colors.title_color, v)
+            color_text = core.colorize(ranged_weapons.colors.title_color, v)
         else
-            color_text = core.colorize(rangedweapons.colors.white, v)
+            color_text = core.colorize(ranged_weapons.colors.white, v)
         end
 
         description = description .. color_text
@@ -61,19 +59,44 @@ function weapon.generate_description(weapon_data)
 
 end
 
-function weapon.eject_shell(itemstack, player, rld_item, rld_time, rldsound, shell)
-    itemstack:set_name(rld_item)
-    local meta = player:get_meta()
-    meta:set_float("rw_cooldown", rld_time)
-
-    local gunMeta = itemstack:get_meta()
-
-    local bulletStack = ItemStack({name = gunMeta:get_string("RW_ammo_name")})
-
-    minetest.sound_play(rldsound, {player})
+function weapon.drop_magazine(player, gun_data)
+    --TODO: This should probably be abstracted into a more general
+    --function for dropping stuff on the ground and not just magazines.
+    --
     local pos = player:get_pos()
     local dir = player:get_look_dir()
     local yaw = player:get_look_horizontal()
+
+    if pos and dir and yaw then
+        pos.y = pos.y + 1.4
+
+        local obj = minetest.add_entity(pos, "rangedweapons:mag")
+
+        --TODO: Make some sense out of these magic values from the
+        --original codebase:
+        if obj then
+            obj:set_properties({textures = {gun_data.magazine}})
+            obj:set_velocity({x = dir.x * 2, y = dir.y * 2, z = dir.z * 2})
+            obj:set_acceleration({x = 0, y = -5, z = 0})
+            obj:set_rotation({x = 0, y = yaw + math.pi, z = 0})
+        end
+    end
+end
+
+
+function weapon.eject_shell(itemstack, player, rld_item, rld_time, rldsound, shell)
+    local meta = player:get_meta()
+    local gun_meta = itemstack:get_meta()
+    local bulletStack = ItemStack({name = gun_meta:get_string("rw_ammo_name")})
+
+    local pos = player:get_pos()
+    local dir = player:get_look_dir()
+    local yaw = player:get_look_horizontal()
+
+    minetest.sound_play(rldsound, {player})
+    itemstack:set_name(rld_item)
+    meta:set_float("rw_cooldown", rld_time)
+
     if pos and dir and yaw then
         pos.y = pos.y + 1.6
         local obj = minetest.add_entity(pos, "rangedweapons:empty_shell")
