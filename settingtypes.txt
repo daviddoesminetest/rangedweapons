@@ -1,0 +1,34 @@
+
+[Damage Multipliers]
+
+rangedweapons.player_dmg_multiplier (Player Damage Multiplier) float 1.0 0.0 100.0
+
+rangedweapons.mob_dmg_multiplier (Mob Damage Multiplier) float 1.0 0.0 100.0
+
+rangedweapons.headshot_dmg_multiplier (Headshot Damage Multiplier) float 1.75 0.0 100.0
+
+[Crafting]
+
+rangedweapons.gun_crafting (Gun Crafting) bool true
+
+rangedweapons.ammo_crafting (Ammo Crafting) bool true
+
+rangedweapons.item_crafting (Item Crafting) bool true
+
+# Rename this to a better name rather than keeping it dumb and unclear
+rangedweapons.other_weapon_crafting (Other Weapon Crafting) bool true
+
+[Skills]
+
+rangedweapons.max_gun_efficiency (Max Gun Efficiency) int 300 0 1000
+
+rangedweapons.min_gun_efficiency (Min Gun Efficiency) int 40 0 1000
+
+[Blood & Gore]
+
+rangedweapons.bloodyness (Bloodyness) int 10 0 100
+
+[Durability]
+
+# Do guns wear out with use
+rangedweapons.gun_durability (Gun Durability) bool true
