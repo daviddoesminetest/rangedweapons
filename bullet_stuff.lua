@@ -1,5 +1,3 @@
-
-
 minetest.register_craftitem("rangedweapons:308shot", {
 	wield_scale = {x=1.0,y=1.0,z=1.0},
 	inventory_image = "rangedweapons_308_shot.png",
