@@ -17,7 +17,7 @@ dofile(modpath .. "/blocks/antigun_block.lua")
 for k, v in pairs(weapon.weapons) do
     weapon_type = k
 
-    for i, weapon_data in ipairs(v) do
+    for _, weapon_data in ipairs(v) do
         dofile(weapon.get_weapon_path(modpath, weapon_type, weapon_data))
     end
 end
@@ -60,37 +60,38 @@ rangedweapons_gain_skill = function(player, skill, chance)
 end
 
 rangedweapons_reload_gun = function(itemstack, player)
-    GunCaps = itemstack:get_definition().RW_gun_capabilities
+    local gun_data = itemstack:get_definition().rw_gun_data
 
-    if GunCaps ~= nil then
-        gun_unload_sound = GunCaps.gun_unload_sound or ""
+    if gun_data ~= nil then
+        gun_unload_sound = gun_data.gun_unload_sound or ""
     end
 
     minetest.sound_play(gun_unload_sound, {player})
 
-    local gun_reload = 0.25
-
-    if GunCaps ~= nil then
-        gun_reload = GunCaps.gun_reload or 0.25
-    end
-
     local playerMeta = player:get_meta()
     local gunMeta = itemstack:get_meta()
 
-    gunMeta:set_float("RW_reload_delay", gun_reload)
+    gunMeta:set_float("RW_reload_delay", gun_data["reload_delay"])
 
-    playerMeta:set_float("rw_cooldown", gun_reload)
+    playerMeta:set_float("rw_cooldown", gun_data["reload_delay"])
 
     local player_has_ammo = 0
     local clipSize = 0
     local reload_ammo = ""
 
-    if GunCaps.suitable_ammo ~= nil then
+    -- If we have the right type of ammo in our inventory?
+    if gun_data.suitable_ammo ~= nil then
+        -- Get the players inventory and iterate over it
         local inv = player:get_inventory()
         for i = 1, inv:get_size("main") do
-            for _, ammo in pairs(GunCaps.suitable_ammo) do
+            -- For each type of suitable ammo in the inventory,
+            -- if the ammo is the kind we're looking for
+            for _, ammo in pairs(gun_data.suitable_ammo) do
                 if inv:get_stack("main", i):get_name() == ammo[1] then
+                    -- Then mark that stack of ammo as what we will use
+                    -- to reload
                     reload_ammo = inv:get_stack("main", i)
+                    -- And set the clipsize??
                     clipSize = ammo[2]
 
                     player_has_ammo = 1
@@ -105,19 +106,13 @@ rangedweapons_reload_gun = function(itemstack, player)
     end
 
     if player_has_ammo == 1 then
-        local gun_icon = "rangedweapons_emergency_gun_icon.png"
-
-        if GunCaps.gun_icon ~= nil then
-            gun_icon = GunCaps.gun_icon
-        end
-
         local ammo_icon = "rangedweapons_emergency_ammo_icon.png"
 
         if reload_ammo:get_definition().inventory_image ~= nil then
             ammo_icon = reload_ammo:get_definition().inventory_image
         end
 
-        player:hud_change(gunimg, "text", gun_icon)
+        player:hud_change(gunimg, "text", gun_data["texture"]["icon"])
         player:hud_change(ammoimg, "text", ammo_icon)
 
         local gunMeta = itemstack:get_meta()
@@ -139,7 +134,7 @@ rangedweapons_reload_gun = function(itemstack, player)
 
         player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
 
-        if GunCaps.gun_magazine ~= nil then
+        if gun_data.gun_magazine ~= nil then
             local pos = player:get_pos()
             local dir = player:get_look_dir()
             local yaw = player:get_look_horizontal()
@@ -147,7 +142,7 @@ rangedweapons_reload_gun = function(itemstack, player)
                 pos.y = pos.y + 1.4
                 local obj = minetest.add_entity(pos, "rangedweapons:mag")
                 if obj then
-                    obj:set_properties({textures = {GunCaps.gun_magazine}})
+                    obj:set_properties({textures = {gun_data.gun_magazine}})
                     obj:set_velocity({x = dir.x * 2, y = dir.y * 2, z = dir.z * 2})
                     obj:set_acceleration({x = 0, y = -5, z = 0})
                     obj:set_rotation({x = 0, y = yaw + math.pi, z = 0})
@@ -155,42 +150,31 @@ rangedweapons_reload_gun = function(itemstack, player)
             end
         end
 
-        if GunCaps.gun_unloaded ~= nil then
-            itemstack:set_name(GunCaps.gun_unloaded)
+        if gun_data.gun_unloaded ~= nil then
+            itemstack:set_name(gun_data.gun_unloaded)
         end
     end
 end
 
 rangedweapons_single_load_gun = function(itemstack, player)
-    GunCaps = itemstack:get_definition().RW_gun_capabilities
+    local gun_data = itemstack:get_definition().rw_gun_data
 
-    if GunCaps ~= nil then
-        gun_unload_sound = GunCaps.gun_unload_sound or ""
-    end
-
-    minetest.sound_play(gun_unload_sound, {player})
-
-    local gun_reload = 0.25
-
-    if GunCaps ~= nil then
-        gun_reload = GunCaps.gun_reload or 0.25
-    end
+    local reload_delay = gun_data["reload_delay"]
 
     local playerMeta = player:get_meta()
     local gunMeta = itemstack:get_meta()
 
-    gunMeta:set_float("RW_reload_delay", gun_reload)
-
-    playerMeta:set_float("rw_cooldown", gun_reload)
+    gunMeta:set_float("RW_reload_delay", reload_delay)
+    playerMeta:set_float("rw_cooldown", reload_delay)
 
     local player_has_ammo = 0
     local clipSize = 0
     local reload_ammo = ""
 
-    if GunCaps.suitable_ammo ~= nil then
+    if gun_data.suitable_ammo ~= nil then
         local inv = player:get_inventory()
         for i = 1, inv:get_size("main") do
-            for _, ammo in pairs(GunCaps.suitable_ammo) do
+            for _, ammo in pairs(gun_data.suitable_ammo) do
                 if inv:get_stack("main", i):get_name() == ammo[1] then
                     reload_ammo = inv:get_stack("main", i)
                     clipSize = ammo[2]
@@ -209,8 +193,8 @@ rangedweapons_single_load_gun = function(itemstack, player)
     if player_has_ammo == 1 then
         local gun_icon = "rangedweapons_emergency_gun_icon.png"
 
-        if GunCaps.gun_icon ~= nil then
-            gun_icon = GunCaps.gun_icon
+        if gun_data.gun_icon ~= nil then
+            gun_icon = gun_data.gun_icon
         end
 
         local ammo_icon = "rangedweapons_emergency_ammo_icon.png"
@@ -241,8 +225,8 @@ rangedweapons_single_load_gun = function(itemstack, player)
 
         player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
 
-        if GunCaps.gun_unloaded ~= nil then
-            itemstack:set_name(GunCaps.gun_unloaded)
+        if gun_data.gun_unloaded ~= nil then
+            itemstack:set_name(gun_data.gun_unloaded)
         end
     end
 end
@@ -278,7 +262,6 @@ rangedweapons_yeet = function(itemstack, player)
             local throw_door_breaking = 0
             local throw_skill = ""
             local throw_skillChance = 0
-            local throw_smokeSize = 0
             local throw_ent = "rangedweapons:shot_bullet"
             local throw_visual = "wielditem"
             local throw_texture = "rangedweapons:shot_bullet_visual"
@@ -380,30 +363,23 @@ rangedweapons_shoot_gun = function(itemstack, player)
             "" .. core.colorize("#ff0000", "Guns are prohibited in this area!")
         )
     else
-        local gun_cooldown = 0
-        local GunCaps = itemstack:get_definition().RW_gun_capabilities
-        local gun_ammo_save = 0
+        local gun_data = itemstack:get_definition().rw_gun_data
 
-        if GunCaps ~= nil then
-            gun_cooldown = GunCaps.gun_cooldown or 0
-            gun_ammo_save = GunCaps.ammo_saving or 0
+        if gun_data ~= nil then
+            gun_ammo_save = gun_data.ammo_saving or 0
         end
 
         local gunMeta = itemstack:get_meta()
         local playerMeta = player:get_meta()
 
         if gunMeta:get_int("RW_bullets") > 0 and playerMeta:get_float("rw_cooldown") <= 0 then
-            playerMeta:set_float("rw_cooldown", gun_cooldown)
-
-            if math.random(1, 100) > gun_ammo_save then
-                gunMeta:set_int("RW_bullets", gunMeta:get_int("RW_bullets") - 1)
-            end
+            playerMeta:set_float("rw_cooldown", gun_data["gun_cooldown"])
 
             player:hud_change(gunammo, "text", gunMeta:get_int("RW_bullets"))
 
             local gun_icon = "rangedweapons_emergency_gun_icon.png"
-            if GunCaps.gun_icon ~= nil then
-                gun_icon = GunCaps.gun_icon
+            if gun_data.gun_icon ~= nil then
+                gun_icon = gun_data.gun_icon
             end
             player:hud_change(gunimg, "text", gun_icon)
 
@@ -453,28 +429,27 @@ rangedweapons_shoot_gun = function(itemstack, player)
             local bullet_size = 0
             local bullet_glow = 20
 
-            if GunCaps ~= nil then
-                gun_damage = GunCaps.gun_damage or {fleshy = 1}
-                gun_sound = GunCaps.gun_sound or "rangedweapons_glock"
-                gun_velocity = GunCaps.gun_velocity or 20
-                gun_accuracy = GunCaps.gun_accuracy or 100
-                gun_cooling = GunCaps.gun_cooling or itemstack:get_name()
-                gun_crit = GunCaps.gun_crit or 0
-                gun_critEffc = GunCaps.gun_critEffc or 1
-                gun_projectiles = GunCaps.gun_projectiles or 1
-                gun_mobPen = GunCaps.gun_mob_penetration or 0
-                gun_nodePen = GunCaps.gun_node_penetration or 0
-                gun_shell = GunCaps.has_shell or 0
-                gun_durability = GunCaps.gun_durability or 0
-                gun_dps = GunCaps.gun_dps or 0
-                gun_ammo_save = GunCaps.ammo_saving or 0
-                gun_gravity = GunCaps.gun_gravity or 0
-                gun_door_breaking = GunCaps.gun_door_breaking or 0
-                gun_smokeSize = GunCaps.gun_smokeSize or 0
+            if gun_data ~= nil then
+                gun_damage = gun_data.gun_damage or {fleshy = 1}
+                gun_sound = gun_data.gun_sound or "rangedweapons_glock"
+                gun_velocity = gun_data.gun_velocity or 20
+                gun_accuracy = gun_data.gun_accuracy or 100
+                gun_cooling = gun_data.gun_cooling or itemstack:get_name()
+                gun_crit = gun_data.gun_crit or 0
+                gun_critEffc = gun_data.gun_critEffc or 1
+                gun_projectiles = gun_data.gun_projectiles or 1
+                gun_mobPen = gun_data.gun_mob_penetration or 0
+                gun_nodePen = gun_data.gun_node_penetration or 0
+                gun_shell = gun_data.has_shell or 0
+                gun_durability = gun_data.gun_durability or 0
+                gun_dps = gun_data.gun_dps or 0
+                gun_gravity = gun_data.gun_gravity or 0
+                gun_door_breaking = gun_data.gun_door_breaking or 0
+                gun_smokeSize = gun_data.gun_smokeSize or 0
 
-                if GunCaps.gun_skill ~= nil then
-                    gun_skill = GunCaps.gun_skill[1] or ""
-                    gun_skillChance = GunCaps.gun_skill[2] or 0
+                if gun_data.gun_skill ~= nil then
+                    gun_skill = gun_data.gun_skill[1] or ""
+                    gun_skillChance = gun_data.gun_skill[2] or 0
                 else
                     gun_skill = ""
                     gun_skillChance = 0
@@ -527,16 +502,16 @@ rangedweapons_shoot_gun = function(itemstack, player)
             local combined_dmg = {}
             local combined_gravity = gun_gravity + bullet_gravity
 
-            for _, gunDmg in pairs(gun_damage) do
-                if bullet_damage[_] ~= nil then
-                    combined_dmg[_] = gun_damage[_] + bullet_damage[_]
+            for i, _ in pairs(gun_damage) do
+                if bullet_damage[i] ~= nil then
+                    combined_dmg[i] = gun_damage[i] + bullet_damage[i]
                 else
-                    combined_dmg[_] = gun_damage[_]
+                    combined_dmg[i] = gun_damage[i]
                 end
             end
-            for _, bulletDmg in pairs(bullet_damage) do
-                if gun_damage[_] == nil then
-                    combined_dmg[_] = bullet_damage[_]
+            for i, _ in pairs(bullet_damage) do
+                if gun_damage[i] == nil then
+                    combined_dmg[i] = bullet_damage[i]
                 end
             end
 
@@ -807,9 +782,9 @@ rangedweapons_launch_projectile = function(
             )
         end
 
-        projectiles = projNum or 1
+        local projectiles = projNum or 1
         for i = 1, projectiles do
-            rndacc = (100 - accuracy) or 0
+            local rndacc = (100 - accuracy) or 0
             local spawnpos_x = pos.x + (math.random(-rndacc, rndacc) / 100)
             local spawnpos_y = pos.y + (math.random(-rndacc, rndacc) / 100)
             local spawnpos_z = pos.z + (math.random(-rndacc, rndacc) / 100)
@@ -856,42 +831,6 @@ rangedweapons_launch_projectile = function(
     end
 end
 
-eject_shell = function(itemstack, player, rld_item, rld_time, rldsound, shell)
-    itemstack:set_name(rld_item)
-    local meta = player:get_meta()
-    meta:set_float("rw_cooldown", rld_time)
-
-    local gunMeta = itemstack:get_meta()
-
-    local bulletStack = ItemStack({name = gunMeta:get_string("RW_ammo_name")})
-
-    minetest.sound_play(rldsound, {player})
-    local pos = player:get_pos()
-    local dir = player:get_look_dir()
-    local yaw = player:get_look_horizontal()
-    if pos and dir and yaw then
-        pos.y = pos.y + 1.6
-        local obj = minetest.add_entity(pos, "rangedweapons:empty_shell")
-
-        if AmmoCaps and bulletStack ~= "" then
-            AmmoCaps = bulletStack:get_definition().RW_ammo_capabilities
-
-            local bullet_shell_visual = "wielditem"
-            local bullet_shell_texture = "rangedweapons:shelldrop"
-
-            bullet_shell_visual = AmmoCaps.shell_visual or "wielditem"
-            bullet_shell_texture = AmmoCaps.shell_texture or "rangedweapons:shelldrop"
-
-            obj:set_properties({textures = {bullet_shell_texture}})
-            obj:set_properties({visual = bullet_shell_visual})
-        end
-        if obj then
-            obj:set_velocity({x = dir.x * -10, y = dir.y * -10, z = dir.z * -10})
-            obj:set_acceleration({x = dir.x * -5, y = -10, z = dir.z * -5})
-            obj:set_yaw(yaw + math.pi)
-        end
-    end
-end
 ---------------------------------------------------
 
 if rweapons_explosives == "true" then
@@ -969,9 +908,7 @@ minetest.register_abm(
 
 minetest.register_on_joinplayer(
     function(player)
-        gunammo =
-            player:hud_add(
-            {
+        player:hud_add({
                 hud_elem_type = "text",
                 name = "gunammo",
                 text = "",
@@ -980,44 +917,32 @@ minetest.register_on_joinplayer(
                 position = {x = 0.7, y = 0.1},
                 offset = {x = 30, y = 100},
                 alignment = {x = 0, y = -1}
-            }
-        )
-        gunimg =
-            player:hud_add(
-            {
+        })
+        player:hud_add({
                 hud_elem_type = "image",
                 text = "rangedweapons_empty_icon.png",
                 scale = {x = 2, y = 2},
                 position = {x = 0.7, y = 0.065},
                 offset = {x = 30, y = 100},
                 alignment = {x = 0, y = -1}
-            }
-        )
-        ammoimg =
-            player:hud_add(
-            {
+        })
+        player:hud_add({
                 hud_elem_type = "image",
                 text = "rangedweapons_empty_icon.png",
                 scale = {x = 1.5, y = 1.5},
                 position = {x = 0.725, y = 0.1},
                 offset = {x = 30, y = 100},
                 alignment = {x = 0, y = -1}
-            }
-        )
-        hit =
-            player:hud_add(
-            {
+        })
+        player:hud_add({
                 hud_elem_type = "image",
                 text = "rangedweapons_empty_icon.png",
                 scale = {x = 2, y = 2},
                 position = {x = 0.5, y = 0.5},
                 offset = {x = 0, y = 0},
                 alignment = {x = 0, y = 0}
-            }
-        )
-        scope_hud =
-            player:hud_add(
-            {
+        })
+        player:hud_add({
                 hud_elem_type = "image",
                 position = {x = 0.5, y = 0.5},
                 scale = {x = -100, y = -100},

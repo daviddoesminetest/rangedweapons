@@ -28,10 +28,9 @@ function weapon.get_weapon_path(modpath, weapon_type, weapon_name)
 end
 
 
-function weapon.get_texture_name(weapon_type, weapon_name, texture_name)
-    return constants.mod_name .. "_" .. weapon_type .. "_" .. weapon_name .. "_" .. texture_name
+function weapon.get_texture_name(weapon_name, texture_name)
+    return constants.mod_name .. "_" .. weapon_name .. "_" .. texture_name
 end
-
 
 function weapon.generate_description(weapon_data)
     local description = ""
@@ -61,6 +60,43 @@ function weapon.generate_description(weapon_data)
 
     return description
 
+end
+
+function weapon.eject_shell(itemstack, player, rld_item, rld_time, rldsound, shell)
+    itemstack:set_name(rld_item)
+    local meta = player:get_meta()
+    meta:set_float("rw_cooldown", rld_time)
+
+    local gunMeta = itemstack:get_meta()
+
+    local bulletStack = ItemStack({name = gunMeta:get_string("RW_ammo_name")})
+
+    minetest.sound_play(rldsound, {player})
+    local pos = player:get_pos()
+    local dir = player:get_look_dir()
+    local yaw = player:get_look_horizontal()
+    if pos and dir and yaw then
+        pos.y = pos.y + 1.6
+        local obj = minetest.add_entity(pos, "rangedweapons:empty_shell")
+
+        if AmmoCaps and bulletStack ~= "" then
+            AmmoCaps = bulletStack:get_definition().RW_ammo_capabilities
+
+            local bullet_shell_visual = "wielditem"
+            local bullet_shell_texture = "rangedweapons:shelldrop"
+
+            bullet_shell_visual = AmmoCaps.shell_visual or "wielditem"
+            bullet_shell_texture = AmmoCaps.shell_texture or "rangedweapons:shelldrop"
+
+            obj:set_properties({textures = {bullet_shell_texture}})
+            obj:set_properties({visual = bullet_shell_visual})
+        end
+        if obj then
+            obj:set_velocity({x = dir.x * -10, y = dir.y * -10, z = dir.z * -10})
+            obj:set_acceleration({x = dir.x * -5, y = -10, z = dir.z * -5})
+            obj:set_yaw(yaw + math.pi)
+        end
+    end
 end
 
 return weapon

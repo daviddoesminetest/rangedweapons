@@ -2,7 +2,7 @@
 
 local handgun = {
     damage = 4,
-    knockback=4,
+    knock_back=4,
     critical_chance = 15,
     critical_efficiency = 2,
     velocity = 25,
