@@ -109,7 +109,7 @@ end
 	minetest.add_particle({
 		pos = self.object:get_pos(),
 		velocity = {x=math.random(-3.0,3.0), y=math.random(2.0,5.0), z=math.random(-3.0,3.0)},
-          	acceleration = {x=math.random(-3.0,3.0), y=math.random(-10.0,-15.0), z=math.random(-3.0,3.0)},
+          	acceleration = {x=math.random(-3.0,3.0), y=math.random(-15.0,-10.0), z=math.random(-3.0,3.0)},
 		expirationtime = 0.5,
 		size = math.random(10,20)/10,
 		collisiondetection = true,
@@ -316,7 +316,7 @@ owner:hud_change(hit, "text", hit_texture)
 	minetest.add_particle({
 		pos = self.object:get_pos(),
 		velocity = {x=math.random(-15.0,15.0)/10, y=math.random(2.0,5.0), z=math.random(-15.0,15.0)/10},
-          	acceleration = {x=math.random(-3.0,3.0), y=math.random(-10.0,-15.0), z=math.random(-3.0,3.0)},
+          	acceleration = {x=math.random(-3.0,3.0), y=math.random(-15.0,-10.0), z=math.random(-3.0,3.0)},
 		expirationtime = 0.75,
 		size = math.random(10,20)/10,
 		collisiondetection = true,
