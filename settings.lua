@@ -30,8 +30,8 @@ rweapons_ammo_crafting = "true"
 rweapons_item_crafting = "true"
 
 -- Add this table to the rangedweapons global (when we get to that)
-rangedweapons.settings = {}
-local settings = rangedweapons.settings
+ranged_weapons.settings = {}
+local settings = ranged_weapons.settings
 
 -- Encapsulate the data into cagegories (e.g. rangedweapons.settings.dmg_multiplier.mob_dmg)
 settings.dmg_multiplier = {}
