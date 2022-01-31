@@ -1,0 +1,75 @@
+
+[Damage Multipliers]
+
+rangedweapons.player_dmg_multiplier (Player Damage Multiplier) float 1.0 0.0 100.0
+
+rangedweapons.mob_dmg_multiplier (Mob Damage Multiplier) float 1.0 0.0 100.0
+
+rangedweapons.headshot_dmg_multiplier (Headshot Damage Multiplier) float 1.75 0.0 100.0
+
+[Crafting]
+
+rangedweapons.gun_crafting (Gun Crafting) bool true
+
+rangedweapons.ammo_crafting (Ammo Crafting) bool true
+
+rangedweapons.item_crafting (Item Crafting) bool true
+
+# Things like Barrels and Gun handles
+rangedweapons.gun_parts_crafting (Gun Parts Crafting) bool true
+
+[Skills]
+
+rangedweapons.max_gun_efficiency (Max Gun Efficiency) int 300 0 1000
+
+rangedweapons.min_gun_efficiency (Min Gun Efficiency) int 40 0 1000
+
+[Blood & Gore]
+
+rangedweapons.bloodyness (Bloodyness) int 10 0 100
+
+[Durability]
+
+# Do guns wear out with use
+rangedweapons.gun_durability (Gun Durability) bool true
+
+[Node Damages]
+
+# Can bullets break glass?
+rangedweapons.break_glass (Break Glass) bool true
+
+# Can bullets break doors?
+rangedweapons.break_doors (Break Doors) bool true
+
+# This section defines what guns/weapons can be used
+[Gun Categories]
+
+# Thrown weapons ('shuriken', 'javelin')
+rangedweapons.throwables (Throwables) bool true
+
+# Hand guns ('glock17', 'luger', 'makarov', 'deagle', 'beretta', 'm1991')
+rangedweapons.handguns (Handguns) bool true
+
+# Revolvers ('python', 'taurus')
+rangedweapons.revolvers (Revolvers) bool true
+
+# SMGS ('mp40', 'mp5', 'kriss_sv', 'ump', 'thompson')
+rangedweapons.smgs (Sub Machine Guns) bool true
+
+# Machine Pistols ('tmp', 'uzi', 'tec9')
+rangedweapons.mps (Machine Pistols) bool true
+
+# Pump Action Shotguns ('remington', 'spas12', 'benelli')
+rangedweapons.shotguns (Shotguns) bool true
+
+# Full Automatic Shotguns ('aa12', 'jackhammer')
+rangedweapons.auto_shotguns (Automatic Shotguns) bool true
+
+# Explosives ('m79', 'milkor', 'rpg', 'hand_grenade')
+rangedweapons.explosives (Explosives) bool true
+
+# Power (Laser/Energy) Weapons ('laser_blaster', 'laser_rifle', 'laser_shotgun')
+rangedweapons.power_weapons (Power Weapons) bool true
+
+# Force Guns ('forcegun')
+rangedweapons.force_guns (Force Guns) bool true
