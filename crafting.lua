@@ -1,5 +1,3 @@
-----------------------------
-----------------------------
 if rweapons_gun_crafting == "true" then
 
 minetest.register_craft({
@@ -114,15 +112,6 @@ minetest.register_craft({
 		{"default:diamond", "default:mese", "default:diamond"},
 		{"default:steel_ingot", "default:diamond", "default:steel_ingot"},
 		{"default:steel_ingot", "", "default:steel_ingot"},
-	}
-})
-
-minetest.register_craft({
-	output = "rangedweapons:glock17",
-	recipe = {
-		{"rangedweapons:plastic_sheet", "rangedweapons:plastic_sheet", "rangedweapons:plastic_sheet"},
-		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
-		{"", "default:diamond", "rangedweapons:plastic_sheet"},
 	}
 })
 

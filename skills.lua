@@ -44,10 +44,10 @@ minetest.register_chatcommand("gunskills", {
 	for _, player in pairs(minetest.get_connected_players()) do
 	local meta = player:get_meta()
 local handguns = meta:get_int("handgun_skill")
-local mps = meta:get_int("mp_skill") 
-local smgs = meta:get_int("smg_skill")  
-local shotguns = meta:get_int("shotgun_skill") 
-local heavy = meta:get_int("heavy_skill") 
+local mps = meta:get_int("mp_skill")
+local smgs = meta:get_int("smg_skill")
+local shotguns = meta:get_int("shotgun_skill")
+local heavy = meta:get_int("heavy_skill")
 local arifle = meta:get_int("arifle_skill")
 local revolver = meta:get_int("revolver_skill")
 local rifle = meta:get_int("rifle_skill")
@@ -86,65 +86,65 @@ minetest.register_globalstep(function(dtime, player)
 	for _, player in pairs(minetest.get_connected_players()) do
 	local meta = player:get_meta()
 local handguns = meta:get_int("handgun_skill")
-local mps = meta:get_int("mp_skill") 
-local smgs = meta:get_int("smg_skill")  
-local shotguns = meta:get_int("shotgun_skill") 
-local heavy = meta:get_int("heavy_skill") 
+local mps = meta:get_int("mp_skill")
+local smgs = meta:get_int("smg_skill")
+local shotguns = meta:get_int("shotgun_skill")
+local heavy = meta:get_int("heavy_skill")
 local arifle = meta:get_int("arifle_skill")
 local revolver = meta:get_int("revolver_skill")
 local rifle = meta:get_int("rifle_skill")
 local throw = meta:get_int("throw_skill")
 if math.random(1, 40) == 1 then
 if handguns > rweapons_min_gun_efficiency then
-	meta:set_int("handgun_skill", handguns - 1) 	
+	meta:set_int("handgun_skill", handguns - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Handgun skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if mps > rweapons_min_gun_efficiency then
-	meta:set_int("mp_skill", mps - 1) 	
+	meta:set_int("mp_skill", mps - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Machine Pistol skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if smgs > rweapons_min_gun_efficiency then
-	meta:set_int("smg_skill", smgs - 1) 	
+	meta:set_int("smg_skill", smgs - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","S.M.G skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if shotguns > rweapons_min_gun_efficiency then
-	meta:set_int("shotgun_skill", shotguns - 1) 	
+	meta:set_int("shotgun_skill", shotguns - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Shotgun skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if heavy > rweapons_min_gun_efficiency then
-	meta:set_int("heavy_skill", heavy - 1) 	
+	meta:set_int("heavy_skill", heavy - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Heavy.MG skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if arifle > rweapons_min_gun_efficiency then
-	meta:set_int("arifle_skill", arifle - 1) 	
+	meta:set_int("arifle_skill", arifle - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","A.Rifle skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if revolver > rweapons_min_gun_efficiency then
-	meta:set_int("revolver_skill", revolver - 1) 	
+	meta:set_int("revolver_skill", revolver - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Revolver/magnum skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if rifle > rweapons_min_gun_efficiency then
-	meta:set_int("rifle_skill", rifle - 1) 	
+	meta:set_int("rifle_skill", rifle - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Rifle skill degraded! "))
 		end
 		end
 if math.random(1, 40) == 1 then
 if throw > rweapons_min_gun_efficiency then
-	meta:set_int("throw_skill", throw - 1) 	
+	meta:set_int("throw_skill", throw - 1)
     minetest.chat_send_player(player:get_player_name(), "" ..core.colorize("#ff0000","Throwing skill degraded! "))
 		end
 		end

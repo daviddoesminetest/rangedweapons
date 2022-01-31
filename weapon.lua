@@ -1,5 +1,4 @@
 local modpath = minetest.get_modpath(minetest.get_current_modname())
-local colors = dofile(modpath.."/colors.lua")
 local constants = dofile(modpath.."/constants.lua")
 
 local weapon = {}
@@ -52,7 +51,7 @@ function weapon.generate_description(weapon_data)
         if i == 0 then
             color_text = core.colorize(item.title_color, v)
         else
-            color_text = core.colorize(colors.white, v)
+            color_text = core.colorize(rangedweapons.colors.white, v)
         end
 
         description = description .. color_text

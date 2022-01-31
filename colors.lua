@@ -1,8 +1,6 @@
-local color = {
+rangedweapons.colors = {
     white = "#ffffff",
-    turquoise = "#35cdff"
+    turquoise = "35cdff"
 }
 
-color.title_color = color["turquoise"]
-
-return color
+ranged_weapons.color.title_color = color.turquoise

@@ -1,13 +1,13 @@
 local weapon_type = "handgun"
 local weapon_name = "beretta"
 
+local weapon_item_name = rangedweapons.mod_name .. ":" .. weapon_name
+
 local modpath = minetest.get_modpath(minetest.get_current_modname())
 
 local item = dofile(modpath.."/item.lua")
 local weapon = dofile(modpath.."/weapon.lua")
 local handgun = dofile(modpath.."/weapons".."/handgun".."/handgun.lua")
-local colors = dofile(modpath.."/colors.lua")
-local constants = dofile(modpath.."/constants.lua")
 
 local beretta_data = {
     name = "Beretta 92",
@@ -18,11 +18,9 @@ local beretta_data = {
         default = weapon.get_texture_name(weapon_type, weapon_name, "texture.png"),
         reload = weapon.get_texture_name(weapon_type, weapon_name, "reload.png"),
     },
-    --unloaded = constants.mod_name .. ":beretta_r",
-    unloaded = "rangedweapons:beretta_r",
-    --cooling = constants.mod_name .. ":beretta_rld",
-    cooling = "rangedweapons:beretta_rld",
-    fire_sound = "rangedweapons_beretta",
+    unloaded = rangedweapons.mod_name .. ":beretta_r",
+    cooling = rangedweapons.mod_name .. ":beretta_rld",
+    fire_sound = rangedweapons.mod_name .. "_beretta",
 }
 
 beretta_data["suitable_ammo"] = {{"rangedweapons:9mm",beretta_data["capacity"]}}
@@ -35,11 +33,11 @@ for k,v in pairs(handgun) do
 end
 
 minetest.register_tool("rangedweapons:beretta_rld", {
-	stack_max= 1,
+	stack_max=1,
 	wield_scale = {x=1.1,y=1.1,z=1.05},
 	description = "",
 	range = 0,
-	loaded_gun = "rangedweapons:beretta",
+	loaded_gun = weapon_item_name,
 	groups = {not_in_creative_inventory = 1},
     inventory_image = beretta_data["texture"]["reload"]
 })
@@ -48,14 +46,14 @@ minetest.register_tool("rangedweapons:beretta_r", {
 	stack_max= 1,
 	wield_scale = {x=1.1,y=1.1,z=1.05},
 	description = "",
-	rw_next_reload = "rangedweapons:beretta",
+	rw_next_reload = weapon_item_name,
 	load_sound = handgun["load_sound"],
 	range = 0,
 	groups = {not_in_creative_inventory = 1},
     inventory_image = beretta_data["texture"]["reload"]
 })
 
-minetest.register_tool("rangedweapons:beretta", {
+minetest.register_tool(weapon_item_name, {
     description = weapon.generate_description(beretta_data),
 	wield_scale = {x=1.1,y=1.1,z=1.05},
 	range = 0,

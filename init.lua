@@ -13,6 +13,9 @@ dofile(modpath .. "/armor.lua")
 
 dofile(modpath .. "/blocks/antigun_block.lua")
 
+rangedweapons = {}
+rangedweapons.mod_name = "rangedweapons"
+
 -- Load all weapons
 for k, v in pairs(weapon.weapons) do
     weapon_type = k
@@ -21,10 +24,6 @@ for k, v in pairs(weapon.weapons) do
         dofile(weapon.get_weapon_path(modpath, weapon_type, weapon_data))
     end
 end
-
-----
----- gun_funcs
-----
 
 make_sparks = function(pos)
     minetest.sound_play("rengedweapons_ricochet", {pos, gain = 0.75})
